@@ -1,0 +1,44 @@
+<launch>
+  <include file="$(find dasom_description)/launch/dasom.launch"/>
+
+  <arg name="device_name"              default="/dev/ttyUSB0"/>
+  <arg name="baud_rate"                default="1000000"/>
+
+  <arg name="scan_range"               default="10"/>
+
+  <arg name="pan_id"                   default="1"/>
+  <arg name="tilt_id"                  default="2"/>
+
+<arg name="init"                  default="false"/>
+
+<!--ADD-->
+  <arg name="position_p_gain"	       default="1000"/>
+  <arg name="position_i_gain" 	       default="0"/>
+  <arg name="position_d_gain"	       default="700"/>
+
+  <arg name="position_p_gain_2nd"	       default="1200"/>
+  <arg name="position_i_gain_2nd" 	       default="0"/>
+  <arg name="position_d_gain_2nd"	       default="900"/>
+
+<!--end-->
+  <param name="device_name"            value="$(arg device_name)"/>
+  <param name="baud_rate"              value="$(arg baud_rate)"/>
+
+  <param name="scan_range"             value="$(arg scan_range)"/>
+
+  <param name="init"             value="$(arg init)"/>
+
+  <param name="position_p_gain"	       value="$(arg position_p_gain)"/>
+  <param name="position_i_gain"	       value="$(arg position_i_gain)"/>
+  <param name="position_d_gain"	       value="$(arg position_d_gain)"/>
+
+  <param name="position_p_gain_2nd"	       value="$(arg position_p_gain_2nd)"/>
+  <param name="position_i_gain_2nd"	       value="$(arg position_i_gain_2nd)"/>
+  <param name="position_d_gain_2nd"	       value="$(arg position_d_gain_2nd)"/>
+
+
+  <node name="torque_ctrl_6DOF" pkg="dynamixel_workbench_controllers" type="torque_ctrl_6DOF" required="true" output="screen"/>
+
+
+ <node if="$(eval init=='true')" name="torque_jacobian" pkg="dasom_controllers" type="torque_jacobian" required="true" />
+</launch>

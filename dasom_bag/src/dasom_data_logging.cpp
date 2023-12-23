@@ -192,7 +192,7 @@ int main(int argc, char **argv)
 	ros::Subscriber imu_lin_acc_sub=nh.subscribe("/imu_lin_acl",1,imu_lin_acc_callback, ros::TransportHints().tcpNoDelay());
 
 	// dasom
-	ros::Subscriber dasom_EE_cmd_position_sub=nh.subscribe("/dasom/EE_command",1,dasom_EE_cmd_callback, ros::TransportHints().tcpNoDelay()); // ?
+	ros::Subscriber dasom_EE_cmd_position_sub=nh.subscribe("/dasom/test_Pub",1,dasom_EE_cmd_callback, ros::TransportHints().tcpNoDelay()); // Test Pub = EE COmmand!!!!
 	ros::Subscriber dasom_EE_meas_position_sub=nh.subscribe("/dasom/EE_pose",1,dasom_EE_meas_callback, ros::TransportHints().tcpNoDelay());
 	ros::Subscriber dasom_global_EE_cmd_sub=nh.subscribe("/dasom/tf/global_EE_cmd", 1, dasom_global_EE_command_callback, ros::TransportHints().tcpNoDelay());
 	ros::Subscriber dasom_global_meas_gimbal__EE_pose_sub=nh.subscribe("/dasom/tf/global_EE_meas_pose", 1, dasom_global_meas_gimbal_EE_pose_callback, ros::TransportHints().tcpNoDelay());
@@ -309,7 +309,7 @@ void publisherSet()
 	// data_log.data[95]=imu_lin_acc.z;	
 
 	// dasom
-	data_log.data[0] = dasom_EE_command.linear.x;
+	data_log.data[0] = dasom_EE_command.linear.x; // Manipulator End Effector Command & measured
 	data_log.data[1] = dasom_EE_command.linear.y;
 	data_log.data[2] = dasom_EE_command.linear.z;
 	data_log.data[3] = dasom_EE_command.angular.x;
@@ -323,14 +323,14 @@ void publisherSet()
 	data_log.data[10] = dasom_EE_measured.angular.y;
 	data_log.data[11] = dasom_EE_measured.angular.z;
 
-	data_log.data[12] = dasom_global_EE_command.linear.x;
+	data_log.data[12] = dasom_global_EE_command.linear.x; // Global Emd Effector Command & measured
 	data_log.data[13] = dasom_global_EE_command.linear.y;
 	data_log.data[14] = dasom_global_EE_command.linear.z;
 	data_log.data[15] = dasom_global_EE_command.angular.x;
 	data_log.data[16] = dasom_global_EE_command.angular.y;
 	data_log.data[17] = dasom_global_EE_command.angular.z;
 
-	data_log.data[18] = dasom_global_meas_gimbal_EE_pose.linear.x;
+	data_log.data[18] = dasom_global_meas_gimbal_EE_pose.linear.x; 
 	data_log.data[19] = dasom_global_meas_gimbal_EE_pose.linear.y;
 	data_log.data[20] = dasom_global_meas_gimbal_EE_pose.linear.z;
 	data_log.data[21] = dasom_global_meas_gimbal_EE_pose.angular.x;
@@ -344,7 +344,7 @@ void publisherSet()
 	data_log.data[28] = dasom_meas_effort4;
 	data_log.data[29] = dasom_meas_effort5;
 
-	data_log.data[30] = dasom_des_position0;
+	data_log.data[30] = dasom_des_position0; // Manipulator angle Command & measured
 	data_log.data[31] = dasom_des_position1;
 	data_log.data[32] = dasom_des_position2;
 	data_log.data[33] = dasom_des_position3;
@@ -370,13 +370,13 @@ void publisherSet()
 
 	data_log.data[50] = battery_voltage;
 
-	data_log.data[51] = attitude.x;
+	data_log.data[51] = attitude.x; // Drone Attitude Command & measured
 	data_log.data[52] = attitude.y;
 	data_log.data[53] = attitude.z;
 	data_log.data[54] = desired_attitude.x;
 	data_log.data[55] = desired_attitude.y;
 	data_log.data[56] = desired_attitude.z;
-	data_log.data[57] = position.x;
+	data_log.data[57] = position.x; // Drone Position Command & measured
 	data_log.data[58] = position.y;
 	data_log.data[59] = position.z;
 	data_log.data[60] = desired_position.x;

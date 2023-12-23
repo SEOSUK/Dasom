@@ -57,12 +57,12 @@ namespace dasom
     double virtual_damper_z;
     double virtual_spring_z;
 
-    double virtual_spring_KD_x;
-    double virtual_damper_KD_x;
-    double virtual_spring_KD_y;
-    double virtual_damper_KD_y;
-    double virtual_spring_KD_z;
-    double virtual_damper_KD_z;
+    double virtual_spring_DK_x;
+    double virtual_damper_DK_x;
+    double virtual_spring_DK_y;
+    double virtual_damper_DK_y;
+    double virtual_spring_DK_z;
+    double virtual_damper_DK_z;
     
     
     Eigen::Vector2d X_from_model_matrix;

@@ -96,6 +96,7 @@ class DasomControl : public dasom::DasomWorkbench
   DasomJoint *ds_jnt4_;
   DasomJoint *ds_jnt5_;
   DasomJoint *ds_jnt6_;
+  DasomJoint *force_lpf_;
 
   /*****************************************************************************
   ** Init Functions
@@ -186,6 +187,7 @@ class DasomControl : public dasom::DasomWorkbench
   // For admittance control
   Eigen::VectorXd X_ref;
   Eigen::VectorXd X_cmd;
+  bool mdk_bool = true;
 
   // For DOB
   double dob_cnt = 0;

@@ -49,14 +49,14 @@ DasomWorkbench::DasomWorkbench()
   virtual_damper_z = 10000;
   virtual_spring_z = 10000;
 
-  virtual_damper_KD_x = 10000;
-  virtual_spring_KD_x = 10000;
+  virtual_damper_DK_x = 10000;
+  virtual_spring_DK_x = 10000;
 
-  virtual_damper_KD_y = 10000;
-  virtual_spring_KD_y = 10000;
+  virtual_damper_DK_y = 10000;
+  virtual_spring_DK_y = 10000;
 
-  virtual_damper_KD_z = 10000;
-  virtual_spring_KD_z = 10000;
+  virtual_damper_DK_z = 10000;
+  virtual_spring_DK_z = 10000;
 
 
   X_from_model_matrix << 0, 0;
@@ -342,7 +342,7 @@ double DasomWorkbench::admittanceControlDK_X(double time_loop, double ref, doubl
 {
   double X_cmd;
   
-	X_position_dot_from_model_DK = f_ext/virtual_damper_KD_x - virtual_spring_KD_x/virtual_damper_KD_x * X_position_from_model_DK;
+	X_position_dot_from_model_DK = f_ext/virtual_damper_DK_x - virtual_spring_DK_x/virtual_damper_DK_x * X_position_from_model_DK;
   X_position_from_model_DK = X_position_from_model_DK + X_position_dot_from_model_DK * time_loop;
 
   X_cmd = ref - X_position_from_model_DK;
@@ -353,7 +353,7 @@ double DasomWorkbench::admittanceControlDK_Y(double time_loop, double ref, doubl
 {
   double Y_cmd;
 
-	Y_position_dot_from_model_DK = f_ext/virtual_damper_KD_y - virtual_spring_KD_y/virtual_damper_KD_y * Y_position_from_model_DK;
+	Y_position_dot_from_model_DK = f_ext/virtual_damper_DK_y - virtual_spring_DK_y/virtual_damper_DK_y * Y_position_from_model_DK;
   Y_position_from_model_DK = Y_position_from_model_DK + Y_position_dot_from_model_DK * time_loop;
 
   Y_cmd = ref - Y_position_from_model_DK;
@@ -364,7 +364,7 @@ double DasomWorkbench::admittanceControlDK_Z(double time_loop, double ref, doubl
 {
   double Z_cmd;
 
-	Z_position_dot_from_model_DK = f_ext/virtual_damper_KD_z - virtual_spring_KD_z/virtual_damper_KD_z * Z_position_from_model_DK;
+	Z_position_dot_from_model_DK = f_ext/virtual_damper_DK_z - virtual_spring_DK_z/virtual_damper_DK_z * Z_position_from_model_DK;
   Z_position_from_model_DK = Z_position_from_model_DK + Z_position_dot_from_model_DK * time_loop;
 
   Z_cmd = ref - Z_position_from_model_DK;

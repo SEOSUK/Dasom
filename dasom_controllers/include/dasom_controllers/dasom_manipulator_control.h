@@ -27,6 +27,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include <dasom_controllers/admittanceSRV.h>
+#include <dasom_controllers/admittanceKD_SRV.h>
 #include <dasom_controllers/bandpassSRV.h>
 #include <omni_msgs/OmniButtonEvent.h>
 #include <tf/transform_datatypes.h>
@@ -127,6 +128,7 @@ class DasomControl : public dasom::DasomWorkbench
   ** ROS Services Clients
   *****************************************************************************/
   ros::ServiceServer admittance_srv_;
+  ros::ServiceServer admittanceKD_srv_;
   ros::ServiceServer bandpass_srv_;
 
   /*****************************************************************************
@@ -224,6 +226,8 @@ class DasomControl : public dasom::DasomWorkbench
   void gimbalEECmdCallback(const geometry_msgs::PoseStamped &msg);
   bool admittanceCallback(dasom_controllers::admittanceSRV::Request  &req,
                           dasom_controllers::admittanceSRV::Response &res);
+  bool admittanceCallback_KD(dasom_controllers::admittanceKD_SRV::Request  &req,
+                          dasom_controllers::admittanceKD_SRV::Response &res);
   bool bandpassCallback(dasom_controllers::bandpassSRV::Request  &req,
                         dasom_controllers::bandpassSRV::Response &res);
   double tanh_function(double input_data, double cut_off_force);

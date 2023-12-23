@@ -177,6 +177,7 @@ void DasomControl::initSubscriber()
 void DasomControl::initServer()
 {
   admittance_srv_ = node_handle_.advertiseService(robot_name_ + "/admittance_srv", &DasomControl::admittanceCallback, this);
+  admittanceKD_srv_ = node_handle_.advertiseService(robot_name_ + "/admittance_KD_srv", &DasomControl::admittanceCallback_KD, this);
   bandpass_srv_ = node_handle_.advertiseService(robot_name_ + "/bandpass_srv", &DasomControl::bandpassCallback, this);
 }
 
@@ -333,6 +334,33 @@ bool DasomControl::admittanceCallback(dasom_controllers::admittanceSRV::Request 
   return true;
 }
 
+bool DasomControl::admittanceCallback_KD(dasom_controllers::admittanceKD_SRV::Request  &req,
+                                      dasom_controllers::admittanceKD_SRV::Response &res)
+{
+  virtual_damper_KD_x = req.x_d;
+  virtual_spring_KD_x = req.x_k;
+  
+  virtual_damper_KD_y = req.y_d;
+  virtual_spring_KD_y = req.y_k;
+
+  virtual_damper_KD_z = req.z_d;
+  virtual_spring_KD_z = req.z_k;
+
+  initializeAdmittanceDK();
+
+
+  X_position_from_model_DK = 0;
+  X_position_dot_from_model_DK = 0;
+  Y_position_from_model_DK = 0;
+  Y_position_dot_from_model_DK = 0;
+  Z_position_from_model_DK = 0;
+  Z_position_dot_from_model_DK = 0;
+
+  return true;
+}
+
+
+
 bool DasomControl::bandpassCallback(dasom_controllers::bandpassSRV::Request & req,
                                     dasom_controllers::bandpassSRV::Response & res)
 {
@@ -464,13 +492,16 @@ void DasomControl::AdmittanceControl()
 // X_ref: haptic command
 {
   // 2 10 6(bp 1 3) // 10 15 10(bp 2 8)
-  X_cmd[0] = admittanceControlX(time_loop, X_ref[0], bf_F_ext_tanh[0]);
-
+  //X_cmd[0] = admittanceControlX(time_loop, X_ref[0], bf_F_ext_tanh[0]);
+  X_cmd[0] = admittanceControlDK_X(time_loop, X_ref[0], bf_F_ext_tanh[0]);
   // 0.1 3 1(bp 1 3) // 5 20 10(bp 2 8)
-  X_cmd[1] = admittanceControlY(time_loop, X_ref[1], bf_F_ext_tanh[1]);
+  //X_cmd[1] = admittanceControlY(time_loop, X_ref[1], bf_F_ext_tanh[1]);
+  X_cmd[1] = admittanceControlDK_Y(time_loop, X_ref[1], bf_F_ext_tanh[1]);
 
   // 2 5 4(bp 1 3) // 5 20 10(bp 2 8)
-  X_cmd[2] = admittanceControlZ(time_loop, X_ref[2], bf_F_ext_tanh[2]);
+  //X_cmd[2] = admittanceControlZ(time_loop, X_ref[2], bf_F_ext_tanh[2]);
+  X_cmd[2] = admittanceControlDK_Z(time_loop, X_ref[2], bf_F_ext_tanh[2]);
+
 
   EE_command[0] = X_cmd[0];
   EE_command[1] = X_cmd[1];

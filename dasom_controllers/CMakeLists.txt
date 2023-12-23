@@ -40,6 +40,7 @@ add_service_files(
   param.srv
   movingFlag.srv
   admittanceSRV.srv
+  admittanceKD_SRV.srv
   bandpassSRV.srv
 )
 ################################################

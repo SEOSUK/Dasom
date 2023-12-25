@@ -221,3 +221,7 @@ target_link_libraries(dasom_tf2_listener2 ${catkin_LIBRARIES})
 add_executable(dasom_tf2_listener3 src/dasom_tf2_listener3.cpp)
 add_dependencies(dasom_tf2_listener3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dasom_tf2_listener3 ${catkin_LIBRARIES})
+
+add_executable(dasom_drone_tf_converter src/dasom_drone_tf_converter.cpp)
+add_dependencies(dasom_drone_tf_converter ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(dasom_drone_tf_converter ${catkin_LIBRARIES})

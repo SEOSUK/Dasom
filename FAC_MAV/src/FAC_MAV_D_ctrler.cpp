@@ -635,7 +635,7 @@ double dasom_paletrone_Period;
 bool movingFlag = false;
 double dasom_sine= 0;
 double cnt=0;
-double dasom_period = 6;
+double dasom_period = 10;
 double dasom_Amp = 0.1;
 double paletrone_command_velocity = 0.07;
 //-----------------------------------------------------

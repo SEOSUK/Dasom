@@ -66,7 +66,7 @@ class TFBroadcaster
   ** Define functions
   *****************************************************************************/
   void palletroneOptitrackLPF(geometry_msgs::PoseStamped transformstamped);
-
+  void drone_paletrone_converter_measured();
  private:
   /*****************************************************************************
   ** ROS NodeHandle
@@ -127,7 +127,6 @@ class TFBroadcaster
   void drone_measured_position_callback(const geometry_msgs::Vector3 & msg);
   void drone_measured_attitude_callback(const geometry_msgs::Vector3 & msg);
   void drone_paletrone_converter_desired();
-  void drone_paletrone_converter_measured();
   void dasomEEPoseCallback(const geometry_msgs::Twist& msg);
 
 

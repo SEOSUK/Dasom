@@ -86,12 +86,16 @@ void TFBroadcaster::drone_paletrone_converter_measured()
 
     transformStamped_pose.header.stamp = ros::Time::now();
     transformStamped_pose.header.frame_id = "world";
-    transformStamped_pose.child_frame_id = "tf/paletrone_drone_converter_measured";
+    transformStamped_pose.child_frame_id = "tf/paletrone_drone_converter_measured";  // 지금 상태는 drone 그 자체의 좌표계 tf를 만든것임
     transformStamped_pose.transform.translation.x = drone_measured[0];
     transformStamped_pose.transform.translation.y = drone_measured[1];
     transformStamped_pose.transform.translation.z = drone_measured[2];
     
     tf::Quaternion quat;
+
+    // drone_measured[3] += ; 
+    // drone_measured[4] += ; 
+    // drone_measured[5] += ; 
 
     quat.setRPY(drone_measured[3], drone_measured[4], drone_measured[5]);
 
@@ -105,13 +109,13 @@ void TFBroadcaster::drone_paletrone_converter_measured()
 
 
 void TFBroadcaster::dasomEEPoseCallback(const geometry_msgs::Twist& msg)
-{
+{ // Manipulator End Effector Measured Callback
     static tf2_ros::StaticTransformBroadcaster br_pose;
     geometry_msgs::TransformStamped transformStamped_pose;
 
     transformStamped_pose.header.stamp = ros::Time::now();
-    transformStamped_pose.header.frame_id = "tf/palletrone_optitrack";
-    transformStamped_pose.child_frame_id = "tf/global_EE_pose";
+    transformStamped_pose.header.frame_id = "tf/paletrone_drone_converter_measured";
+    transformStamped_pose.child_frame_id = "tf/converted_global_EE_pose";
     transformStamped_pose.transform.translation.x = msg.linear.x;
     transformStamped_pose.transform.translation.y = msg.linear.y;
     transformStamped_pose.transform.translation.z = msg.linear.z;
@@ -166,7 +170,7 @@ int main(int argc, char **argv)
         tf_br_.time_i = ros::Time::now().toSec();
 
         // tf_br_.world2palletrone(tf_br_.optitrackQuat, roll, pitch, yaw);
-
+        tf_br_.drone_paletrone_converter_measured();
         ros::spinOnce();
         loop.sleep();
     }

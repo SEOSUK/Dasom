@@ -31,6 +31,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include "omni_msgs/OmniButtonEvent.h"
 #include "dasom_toolbox/dasom_joint.h"
+#include "dasom_toolbox/dasom_palletrone.h"
 
 #define PI 3.14159256359
 
@@ -55,7 +56,9 @@ class TFBroadcaster
   Eigen::VectorXd drone_command;
   Eigen::VectorXd drone_measured;
   Eigen::VectorXd global_EE_position_by_drone;
-
+  Eigen::Vector3d pt_command;
+  Eigen::Vector3d pt_measured_position;
+  Eigen::Vector3d pt_measured_attitude;
 
   // For optitrack lpf
   Eigen::VectorXd optitrackQuat;
@@ -66,7 +69,9 @@ class TFBroadcaster
   ** Define functions
   *****************************************************************************/
   void palletroneOptitrackLPF(geometry_msgs::PoseStamped transformstamped);
+  void drone_paletrone_converter_desired();
   void drone_paletrone_converter_measured();
+
  private:
   /*****************************************************************************
   ** ROS NodeHandle
@@ -83,6 +88,7 @@ class TFBroadcaster
   *****************************************************************************/
   // DasomJoint
   DasomJoint *ds_jnt_;
+  dasom::DasomPalletrone *ds_pt_;
 
   /*****************************************************************************
   ** Init Functions
@@ -126,11 +132,9 @@ class TFBroadcaster
   void drone_command_attitude_callback(const geometry_msgs::Vector3 & msg);
   void drone_measured_position_callback(const geometry_msgs::Vector3 & msg);
   void drone_measured_attitude_callback(const geometry_msgs::Vector3 & msg);
-  void drone_paletrone_converter_desired();
   void dasomEEPoseCallback(const geometry_msgs::Twist& msg);
-
-
+  void globalFixedGimbalPoseCallback(const geometry_msgs::PoseStamped &msg);
+  void dasomEECmdCallback(const geometry_msgs::Twist& msg);
 
 };
-
 #endif //TF_BROADCASTER_H_

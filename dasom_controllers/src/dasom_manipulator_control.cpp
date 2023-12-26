@@ -180,6 +180,8 @@ void DasomControl::initServer()
   admittance_srv_ = node_handle_.advertiseService(robot_name_ + "/admittance_srv", &DasomControl::admittanceCallback, this);
   admittanceKD_srv_ = node_handle_.advertiseService(robot_name_ + "/admittance_KD_srv", &DasomControl::admittanceCallback_KD, this);
   bandpass_srv_ = node_handle_.advertiseService(robot_name_ + "/bandpass_srv", &DasomControl::bandpassCallback, this);
+  grey_button_srv_ = node_handle_.advertiseService(robot_name_ + "/grey_button_srv", &DasomControl::grey_button_Callback, this);
+
 }
 
 void DasomControl::jointCallback(const sensor_msgs::JointState::ConstPtr &msg)
@@ -389,6 +391,48 @@ bool DasomControl::bandpassCallback(dasom_controllers::bandpassSRV::Request & re
   bp_X3 << 0, 0;
   bp_X3.transpose();
 
+  return true;
+}
+
+
+bool DasomControl::grey_button_Callback(std_srvs::Empty::Request &req,
+                                        std_srvs::Empty::Request &res)
+{
+    if(grey_button == 0)
+    // For gimbaling
+    {
+      grey_button++;
+      ROS_INFO("Grey 1: Gimbaling mode");
+
+      gimbal_tf = global_EE_tf; // globalEEPoseCallback
+
+      geometry_msgs::PoseStamped gimbal_tf_msg;
+
+      gimbal_tf_msg.pose.position.x = gimbal_tf[0];
+      gimbal_tf_msg.pose.position.y = gimbal_tf[1];
+      gimbal_tf_msg.pose.position.z = gimbal_tf[2];
+
+      gimbal_tf_msg.pose.orientation.x = gimbal_tf[3];
+      gimbal_tf_msg.pose.orientation.y = gimbal_tf[4];
+      gimbal_tf_msg.pose.orientation.z = gimbal_tf[5];
+      gimbal_tf_msg.pose.orientation.w = gimbal_tf[6];
+
+      gimbal_pub_.publish(gimbal_tf_msg);
+    }
+    else if(grey_button == 1)
+    // For gimbaling + command mode
+    {
+      grey_button++;
+      ROS_INFO("Grey 2: Gimbaling + Command mode");
+    }
+    else if(grey_button == 2)
+    // For command mode
+    {
+      grey_button = 0;
+      ROS_INFO("Grey 0: Command mode");
+
+      gimbalcommand_safe = false;
+    }
   return true;
 }
 

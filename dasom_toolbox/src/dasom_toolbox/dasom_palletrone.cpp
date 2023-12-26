@@ -66,6 +66,16 @@ Eigen::Matrix3d DasomPalletrone::RotD2M()
   return RotD2M;
 }
 
+Eigen::Matrix3d DasomPalletrone::RotM2D()
+{
+  Eigen::Matrix3d RotM2D;
+
+  RotM2D << RotX(-PI) * RotZ(-PI/4);
+
+  return RotM2D;
+}
+
+
 Eigen::Vector3d DasomPalletrone::M2Dposition(Eigen::Vector3d Mposition)
 {
   Eigen::Vector3d M2Dposition;
@@ -79,7 +89,7 @@ Eigen::Vector3d DasomPalletrone::D2Mposition(Eigen::Vector3d Dposition)
 {
   Eigen::Vector3d D2Mposition;
 
-  D2Mposition << RotD2M().inverse() * Dposition;
+  D2Mposition << RotM2D() * Dposition;
 
   return D2Mposition;
 }

@@ -61,6 +61,7 @@ namespace dasom
     Eigen::Matrix3d RotX(double theta);
     Eigen::Matrix3d RotZ(double theta);
     Eigen::Matrix3d RotD2M();
+    Eigen::Matrix3d RotM2D();
   };
 } // namespace DASOM
 

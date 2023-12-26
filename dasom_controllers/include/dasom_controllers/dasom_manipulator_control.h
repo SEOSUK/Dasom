@@ -35,6 +35,7 @@
 #include <tf2_msgs/TFMessage.h>
 #include <dasom_toolbox/dasom_workbench.h>
 #include <dasom_toolbox/dasom_joint.h>
+#include "std_srvs/Empty.h"
 
 using namespace dasom;
 
@@ -131,6 +132,7 @@ class DasomControl : public dasom::DasomWorkbench
   ros::ServiceServer admittance_srv_;
   ros::ServiceServer admittanceKD_srv_;
   ros::ServiceServer bandpass_srv_;
+  ros::ServiceServer grey_button_srv_;
 
   /*****************************************************************************
   ** Define variables
@@ -232,6 +234,9 @@ class DasomControl : public dasom::DasomWorkbench
                           dasom_controllers::admittanceKD_SRV::Response &res);
   bool bandpassCallback(dasom_controllers::bandpassSRV::Request  &req,
                         dasom_controllers::bandpassSRV::Response &res);
+  bool grey_button_Callback(std_srvs::Empty::Request &req,
+                           std_srvs::Empty::Request &res);
+                      
   double tanh_function(double input_data, double cut_off_force);
   void tauLPFforExternalForce();
   void startGimbalHapticCommand();

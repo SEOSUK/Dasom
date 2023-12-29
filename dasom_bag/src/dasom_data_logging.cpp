@@ -68,6 +68,7 @@ geometry_msgs::Twist dasom_global_meas_gimbal_EE_pose;
 sensor_msgs::JointState dasom_meas_effort;
 geometry_msgs::WrenchStamped ext_force;
 geometry_msgs::Twist admittance_X_ref;
+geometry_msgs::Twist angle_d_msg;
 
 
 double PWM_cmd[8]={1000., 1000., 1000., 1000., 1000., 1000., 1000., 1000.};
@@ -109,204 +110,12 @@ double dasom_meas_position3 = 0;
 double dasom_meas_position4 = 0;
 double dasom_meas_position5 = 0;
 
-void pos_callback(const geometry_msgs::Vector3& msg);
-void desired_pos_callback(const geometry_msgs::Vector3& msg);
-void attitude_callback(const geometry_msgs::Vector3& msg);
-void desired_attitude_callback(const geometry_msgs::Vector3& msg);
-void linear_velocity_callback(const geometry_msgs::Vector3& msg);
-void desired_linear_velocity_callback(const geometry_msgs::Vector3& msg);
-void pwm_cmd_callback(const std_msgs::Int16MultiArray::ConstPtr& msg);
-void motor_thrust_callback(const std_msgs::Float32MultiArray::ConstPtr& msg);
-void servo_angle_callback(const sensor_msgs::JointState& msg);
-void desired_servo_angle_callback(const sensor_msgs::JointState& msg);
-void battery_voltage_callback(const std_msgs::Float32& msg);
-void sampling_time_callback(const std_msgs::Float32& msg);
-void desired_force_callback(const geometry_msgs::Vector3& msg);
-void desired_torque_callback(const geometry_msgs::Vector3& msg);
-void center_of_mass_callback(const geometry_msgs::Vector3& msg);
-void bias_gradient_callback(const geometry_msgs::Vector3& msg);
-void filtered_bias_gradient_callback(const geometry_msgs::Vector3& msg);
-void sbus_callback(const std_msgs::Int16MultiArray::ConstPtr& msg);
-void angular_velocity_callback(const geometry_msgs::Vector3& msg);
-void attitude_dob_disturbance_callback(const geometry_msgs::Vector3& msg);
-void external_force_callback(const geometry_msgs::Vector3& msg);
-void external_torque_callback(const geometry_msgs::Vector3& msg);
-void mhe_delta_t_callback(const std_msgs::Float32& msg);
-void reference_position_callback(const geometry_msgs::Vector3& msg);
-void calculated_force_callback(const geometry_msgs::Vector3& msg);
-void non_bias_external_force_callback(const geometry_msgs::Vector3& msg);
-//void mass_callback(const std_msgs::Float32& msg);
-void adaptive_external_force_callback(const geometry_msgs::Vector3& msg);
-void adaptive_external_torque_callback(const geometry_msgs::Vector3& msg);
-void adaptive_mhe_delta_t_callback(const std_msgs::Float32& msg);
-//void MoI_callback(const geometry_msgs::Vector3& msg);
-void force_dhat_callback(const geometry_msgs::Vector3& msg);
-void torque_dhat_callback(const geometry_msgs::Vector3& msg);
-void imu_lin_acc_callback(const geometry_msgs::Vector3& msg);
-void publisherSet();
 
-// dasom
-void dasom_EE_cmd_callback(const geometry_msgs::Twist &msg);
-void dasom_EE_meas_callback(const geometry_msgs::Twist &msg);
-void dasom_global_EE_command_callback(const geometry_msgs::Twist &msg);
-void dasom_global_meas_gimbal_EE_pose_callback(const geometry_msgs::Twist &msg);
-void dasom_meas_effort_callback(const sensor_msgs::JointState &msg);
-void dasom_desired_angle_callback(const sensor_msgs::JointState &msg);
-void dasom_external_force_callback(const geometry_msgs::WrenchStamped &msg);
-void dasom_admittance_X_ref_callback(const geometry_msgs::Twist &msg);
-
-
-int main(int argc, char **argv)
-{
-	ros::init(argc, argv,"dasom_data_logging");
-	
-	ros::NodeHandle nh;
-	ros::Subscriber attitude_log=nh.subscribe("/angle",1,attitude_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber desired_attitude_log=nh.subscribe("/desired_angle",1,desired_attitude_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber position_log=nh.subscribe("/pos",1,pos_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber desired_position_log=nh.subscribe("/pos_d",1,desired_pos_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber servo_angle_log=nh.subscribe("/joint_states",1,servo_angle_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber desired_servo_angle_log=nh.subscribe("/goal_dynamixel_position",1,desired_servo_angle_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber pwm_log=nh.subscribe("/PWMs",1,pwm_cmd_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber desired_torque_log=nh.subscribe("/torque_d",1,desired_torque_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber desired_force_log=nh.subscribe("/force_d",1,desired_force_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber motor_thrust_log=nh.subscribe("/Forces",1,motor_thrust_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber sbus_log=nh.subscribe("/sbus",1,sbus_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber delta_t_log=nh.subscribe("/delta_t",1,sampling_time_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber battery_voltage_log=nh.subscribe("/battery_voltage",1,battery_voltage_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber linear_velocity_log=nh.subscribe("/lin_vel",1,linear_velocity_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber desired_linear_velocity_log=nh.subscribe("/lin_vel_d",1,desired_linear_velocity_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber Center_of_Mass_log=nh.subscribe("/Center_of_Mass",1,center_of_mass_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber bias_gradient_log=nh.subscribe("/bias_gradient",1,bias_gradient_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber filtered_bias_gradient_log=nh.subscribe("/filtered_bias_gradient",1,filtered_bias_gradient_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber angular_velocity_log=nh.subscribe("/angular_velocity",1,angular_velocity_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber attitude_dob_disturbance_log=nh.subscribe("/att_dhat",1,attitude_dob_disturbance_callback,ros::TransportHints().tcpNoDelay());
-	ros::Subscriber external_force_log=nh.subscribe("/external_force",1,external_force_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber external_torque_log=nh.subscribe("/external_torque",1,external_torque_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber mhe_delta_t_log=nh.subscribe("/mhe_delta_t",1,mhe_delta_t_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber reference_position_log=nh.subscribe("/reference_position",1,reference_position_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber calculated_force_log=nh.subscribe("/calculated_force",1,calculated_force_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber non_bias_external_force_log=nh.subscribe("/non_bias_external_force",1,non_bias_external_force_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber force_dhat_sub=nh.subscribe("/force_dhat",1,force_dhat_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber torque_dhat_sub=nh.subscribe("/torque_dhat",1,torque_dhat_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber imu_lin_acc_sub=nh.subscribe("/imu_lin_acl",1,imu_lin_acc_callback, ros::TransportHints().tcpNoDelay());
-
-	// dasom
-	ros::Subscriber dasom_EE_cmd_position_sub=nh.subscribe("/dasom/test_Pub",1,dasom_EE_cmd_callback, ros::TransportHints().tcpNoDelay()); // Test Pub = EE COmmand!!!!
-	ros::Subscriber dasom_EE_meas_position_sub=nh.subscribe("/dasom/EE_pose",1,dasom_EE_meas_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber dasom_global_EE_cmd_sub=nh.subscribe("/dasom/tf/global_EE_cmd", 1, dasom_global_EE_command_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber dasom_global_meas_gimbal__EE_pose_sub=nh.subscribe("/dasom/tf/global_EE_meas_pose", 1, dasom_global_meas_gimbal_EE_pose_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber dasom_measured_effort_sub=nh.subscribe("/dasom/joint_states", 1, dasom_meas_effort_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber dasom_desired_position_sub=nh.subscribe("/dasom/goal_dynamixel_position", 1, dasom_desired_angle_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber dasom_external_force_sub=nh.subscribe("/dasom/external_force", 1, dasom_external_force_callback, ros::TransportHints().tcpNoDelay());
-	ros::Subscriber dasom_admittance_X_ref_sub=nh.subscribe("/dasom/test_Pub2", 1, dasom_admittance_X_ref_callback, ros::TransportHints().tcpNoDelay());
-
-	data_log_publisher=nh.advertise<std_msgs::Float64MultiArray>("data_log",10);
-	ros::Timer timerPulish_log=nh.createTimer(ros::Duration(1.0/200.0), std::bind(publisherSet));
-	ros::spin();
-	return 0;
-}
 
 void publisherSet()
 {
 	data_log.data.resize(124);
 
-	// data_log.data[0]=attitude.x;
-	// data_log.data[1]=attitude.y;
-	// data_log.data[2]=attitude.z;
-	// data_log.data[3]=desired_attitude.x;
-	// data_log.data[4]=desired_attitude.y;
-	// data_log.data[5]=desired_attitude.z;
-	// data_log.data[6]=position.x;
-	// data_log.data[7]=position.y;
-	// data_log.data[8]=position.z;
-	// data_log.data[9]=desired_position.x;
-	// data_log.data[10]=desired_position.y;
-	// data_log.data[11]=desired_position.z;
-	// data_log.data[12]=theta1;
-	// data_log.data[13]=theta2;
-	// data_log.data[14]=theta3;
-	// data_log.data[15]=theta4;
-	// data_log.data[16]=desired_theta1;
-	// data_log.data[17]=desired_theta2;
-	// data_log.data[18]=desired_theta3;
-	// data_log.data[19]=desired_theta4;
-	// data_log.data[20]=PWM_cmd[0];
-	// data_log.data[21]=PWM_cmd[1];
-	// data_log.data[22]=PWM_cmd[2];
-	// data_log.data[23]=PWM_cmd[3];
-	// data_log.data[24]=PWM_cmd[4];
-	// data_log.data[25]=PWM_cmd[5];
-	// data_log.data[26]=PWM_cmd[6];
-	// data_log.data[27]=PWM_cmd[7];
-	// data_log.data[28]=desired_torque.x;
-	// data_log.data[29]=desired_torque.y;
-	// data_log.data[30]=desired_torque.z;
-	// data_log.data[31]=desired_force.x;
-	// data_log.data[32]=desired_force.y;
-	// data_log.data[33]=desired_force.z;
-	// data_log.data[34]=individual_motor_thrust[0];
-	// data_log.data[35]=individual_motor_thrust[1];
-	// data_log.data[36]=individual_motor_thrust[2];
-	// data_log.data[37]=individual_motor_thrust[3];
-	// data_log.data[38]=SBUS[0];
-	// data_log.data[39]=SBUS[1];
-	// data_log.data[40]=SBUS[2];
-	// data_log.data[41]=SBUS[3];
-	// data_log.data[42]=SBUS[4];
-	// data_log.data[43]=SBUS[5];
-	// data_log.data[44]=SBUS[6];
-	// data_log.data[45]=SBUS[7];
-	// data_log.data[46]=SBUS[8];
-	// data_log.data[47]=delta_t;
-	// data_log.data[48]=battery_voltage;
-	// data_log.data[49]=linear_velocity.x;
-	// data_log.data[50]=linear_velocity.y;
-	// data_log.data[51]=linear_velocity.z;
-	// data_log.data[52]=desired_linear_velocity.x;
-	// data_log.data[53]=desired_linear_velocity.y;
-	// data_log.data[54]=desired_linear_velocity.z;
-	// data_log.data[55]=center_of_mass.x;
-	// data_log.data[56]=center_of_mass.y;
-	// data_log.data[57]=center_of_mass.z;
-	// data_log.data[58]=bias_gradient.x;
-	// data_log.data[59]=bias_gradient.y;
-	// data_log.data[60]=bias_gradient.z;
-	// data_log.data[61]=filtered_bias_gradient.x;
-	// data_log.data[62]=filtered_bias_gradient.y;
-	// data_log.data[63]=filtered_bias_gradient.z;
-	// data_log.data[64]=angular_velocity.x;
-	// data_log.data[65]=angular_velocity.y;
-	// data_log.data[66]=angular_velocity.z;
-	// data_log.data[67]=attitude_dob_disturbance.x;
-	// data_log.data[68]=attitude_dob_disturbance.y;
-	// data_log.data[69]=attitude_dob_disturbance.z;
-	// data_log.data[70]=external_force.x;
-	// data_log.data[71]=external_force.y;
-	// data_log.data[72]=external_force.z;
-	// data_log.data[73]=external_torque.x;
-	// data_log.data[74]=external_torque.y;
-	// data_log.data[75]=external_torque.z;
-	// data_log.data[76]=mhe_delta_t;	
-	// data_log.data[77]=reference_position.x;
-	// data_log.data[78]=reference_position.y;
-	// data_log.data[79]=reference_position.z;
-	// data_log.data[80]=calculated_force.x;
-	// data_log.data[81]=calculated_force.y;
-	// data_log.data[82]=calculated_force.z;
-	// data_log.data[83]=non_bias_external_force.x;	
-	// data_log.data[84]=non_bias_external_force.y;	
-	// data_log.data[85]=non_bias_external_force.z;	
-	// data_log.data[86]=mass;
-	// data_log.data[87]=force_dhat.x;
-	// data_log.data[88]=force_dhat.y;
-	// data_log.data[89]=force_dhat.z;
-	// data_log.data[90]=torque_dhat.x;
-	// data_log.data[91]=torque_dhat.y;
-	// data_log.data[92]=torque_dhat.z;
-	// data_log.data[93]=imu_lin_acc.x;	
-	// data_log.data[94]=imu_lin_acc.y;	
-	// data_log.data[95]=imu_lin_acc.z;	
 
 	// dasom
 	data_log.data[0] = dasom_EE_command.linear.x; // Manipulator End Effector Command & measured
@@ -397,6 +206,13 @@ void publisherSet()
 	data_log.data[72] = admittance_X_ref.angular.x;
 	data_log.data[73] = admittance_X_ref.angular.y;
 	data_log.data[74] = admittance_X_ref.angular.z;
+
+	data_log.data[75] = angle_d_msg.linear.x;		// angle_d
+	data_log.data[76] = angle_d_msg.linear.y;
+	data_log.data[77] = angle_d_msg.linear.z;
+	data_log.data[78] = angle_d_msg.angular.x;
+	data_log.data[79] = angle_d_msg.angular.y;
+	data_log.data[80] = angle_d_msg.angular.z;
 
 	data_log_publisher.publish(data_log);
 }
@@ -630,4 +446,62 @@ void dasom_external_force_callback(const geometry_msgs::WrenchStamped &msg)
 void dasom_admittance_X_ref_callback(const geometry_msgs::Twist &msg)
 {
 	admittance_X_ref = msg;
+}
+
+void dasom_angle_d_callback(const geometry_msgs::Twist &msg)
+{
+	angle_d_msg = msg;
+
+}
+
+int main(int argc, char **argv)
+{
+	ros::init(argc, argv,"dasom_data_logging");
+	
+	ros::NodeHandle nh;
+	ros::Subscriber attitude_log=nh.subscribe("/angle",1,attitude_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber desired_attitude_log=nh.subscribe("/desired_angle",1,desired_attitude_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber position_log=nh.subscribe("/pos",1,pos_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber desired_position_log=nh.subscribe("/pos_d",1,desired_pos_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber servo_angle_log=nh.subscribe("/joint_states",1,servo_angle_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber desired_servo_angle_log=nh.subscribe("/goal_dynamixel_position",1,desired_servo_angle_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber pwm_log=nh.subscribe("/PWMs",1,pwm_cmd_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber desired_torque_log=nh.subscribe("/torque_d",1,desired_torque_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber desired_force_log=nh.subscribe("/force_d",1,desired_force_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber motor_thrust_log=nh.subscribe("/Forces",1,motor_thrust_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber sbus_log=nh.subscribe("/sbus",1,sbus_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber delta_t_log=nh.subscribe("/delta_t",1,sampling_time_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber battery_voltage_log=nh.subscribe("/battery_voltage",1,battery_voltage_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber linear_velocity_log=nh.subscribe("/lin_vel",1,linear_velocity_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber desired_linear_velocity_log=nh.subscribe("/lin_vel_d",1,desired_linear_velocity_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber Center_of_Mass_log=nh.subscribe("/Center_of_Mass",1,center_of_mass_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber bias_gradient_log=nh.subscribe("/bias_gradient",1,bias_gradient_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber filtered_bias_gradient_log=nh.subscribe("/filtered_bias_gradient",1,filtered_bias_gradient_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber angular_velocity_log=nh.subscribe("/angular_velocity",1,angular_velocity_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber attitude_dob_disturbance_log=nh.subscribe("/att_dhat",1,attitude_dob_disturbance_callback,ros::TransportHints().tcpNoDelay());
+	ros::Subscriber external_force_log=nh.subscribe("/external_force",1,external_force_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber external_torque_log=nh.subscribe("/external_torque",1,external_torque_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber mhe_delta_t_log=nh.subscribe("/mhe_delta_t",1,mhe_delta_t_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber reference_position_log=nh.subscribe("/reference_position",1,reference_position_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber calculated_force_log=nh.subscribe("/calculated_force",1,calculated_force_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber non_bias_external_force_log=nh.subscribe("/non_bias_external_force",1,non_bias_external_force_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber force_dhat_sub=nh.subscribe("/force_dhat",1,force_dhat_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber torque_dhat_sub=nh.subscribe("/torque_dhat",1,torque_dhat_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber imu_lin_acc_sub=nh.subscribe("/imu_lin_acl",1,imu_lin_acc_callback, ros::TransportHints().tcpNoDelay());
+
+	// dasom
+	ros::Subscriber dasom_EE_cmd_position_sub=nh.subscribe("/dasom/test_Pub",1,dasom_EE_cmd_callback, ros::TransportHints().tcpNoDelay()); // Test Pub = EE COmmand!!!!
+	ros::Subscriber dasom_EE_meas_position_sub=nh.subscribe("/dasom/EE_pose",1,dasom_EE_meas_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_global_EE_cmd_sub=nh.subscribe("/dasom/tf/global_EE_cmd", 1, dasom_global_EE_command_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_global_meas_gimbal__EE_pose_sub=nh.subscribe("/dasom/tf/global_EE_meas_pose", 1, dasom_global_meas_gimbal_EE_pose_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_measured_effort_sub=nh.subscribe("/dasom/joint_states", 1, dasom_meas_effort_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_desired_position_sub=nh.subscribe("/dasom/goal_dynamixel_position", 1, dasom_desired_angle_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_external_force_sub=nh.subscribe("/dasom/external_force", 1, dasom_external_force_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_admittance_X_ref_sub=nh.subscribe("/dasom/test_Pub2", 1, dasom_admittance_X_ref_callback, ros::TransportHints().tcpNoDelay());
+	ros::Subscriber dasom_angle_d_sub = nh.subscribe("/dasom/test_Pub2", 1, dasom_angle_d_callback, ros::TransportHints().tcpNoDelay());
+
+	data_log_publisher=nh.advertise<std_msgs::Float64MultiArray>("data_log",10);
+	ros::Timer timerPulish_log=nh.createTimer(ros::Duration(1.0/200.0), std::bind(publisherSet));
+	ros::spin();
+	return 0;
 }

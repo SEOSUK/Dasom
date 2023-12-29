@@ -115,7 +115,8 @@ class DasomControl : public dasom::DasomWorkbench
   ros::Publisher gimbal_pub_;
   ros::Publisher force_pub_;
   ros::Publisher test_Pub;
-  ros::Publisher test_Pub2;
+  ros::Publisher test_Pub2; 
+  ros::Publisher angle_d_pub_;
 
   /*****************************************************************************
   ** ROS Subscribers, Callback Functions and Relevant Functions
@@ -185,7 +186,7 @@ class DasomControl : public dasom::DasomWorkbench
   Eigen::Vector3d F_min;
   Eigen::VectorXd hysteresis_max;
   Eigen::VectorXd hysteresis_min;
-
+  
   // For admittance control
   Eigen::VectorXd X_ref;
   Eigen::VectorXd X_cmd;

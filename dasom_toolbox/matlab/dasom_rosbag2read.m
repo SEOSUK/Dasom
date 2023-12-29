@@ -25,7 +25,6 @@ end
 
 %%
 close all
-for a=1
 
     % D.A.S.O.M command End-Effector position-------------------
     figure('Name', "DASOM EE pose")
@@ -200,4 +199,11 @@ for a=1
     grid
     title("Admittance Control Z");
 
-end
+    subplot(2,1,1);
+    hold on
+    plot(data_log_time.Time-time_origin,data(:,77),'-','LineWidth',2.0);
+    plot(data_log_time.Time-time_origin,data(:,31),'--','LineWidth',2.0);
+    plot(data_log_time.Time-time_origin,data(:,37),':','LineWidth',2.0);
+    legend({'Z_{angle_d}','Z_{angle_command}','Z_{angle_measured}'},'Location','northwest','Orientation','horizontal');
+    grid
+    title("angle w/ w/o DOB");

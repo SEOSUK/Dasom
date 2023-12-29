@@ -160,6 +160,7 @@ void DasomControl::initPublisher()
   dasom_EE_pos_pub_ = node_handle_.advertise<geometry_msgs::Twist>(robot_name_ + "/EE_pose", 10); //use
   gimbal_pub_ = node_handle_.advertise<geometry_msgs::PoseStamped>(robot_name_ + "/tf/global_fixed_gimbal_EE_pose", 10); //use
   force_pub_ = node_handle_.advertise<geometry_msgs::WrenchStamped>(robot_name_ + "/external_force", 10); //use
+  angle_d_pub_ = node_handle_.advertise<geometry_msgs::Twist>(robot_name_ + "/angle_d", 10);
 
   // For Test
   test_Pub = node_handle_.advertise<geometry_msgs::Twist>(robot_name_ + "/test_Pub", 10); //use
@@ -566,6 +567,7 @@ void DasomControl::DOB()
 {
   dob_cnt++;
 
+  geometry_msgs::Twist angle_d_msg;
   if(dob_cnt > 600)
   {
     // ROS_WARN("DOB Start!");
@@ -592,6 +594,16 @@ void DasomControl::DOB()
     d_hat[5] = ds_jnt6_->updateDOB(time_loop, angle_measured[5], angle_d[5]);
     angle_d[5] = angle_ref[5] - d_hat[5];
     angle_safe[5] = angle_d[5];
+
+    angle_d_msg.linear.x = angle_d[0];
+    angle_d_msg.linear.y = angle_d[1];
+    angle_d_msg.linear.z = angle_d[2];
+    
+    angle_d_msg.angular.x = angle_d[3];
+    angle_d_msg.angular.y = angle_d[4];
+    angle_d_msg.angular.z = angle_d[5];    
+
+    angle_d_pub_.publish(angle_d_msg);
   }
 }
 
